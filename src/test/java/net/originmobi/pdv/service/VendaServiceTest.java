@@ -2,7 +2,7 @@ package net.originmobi.pdv.service;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import net.originmobi.pdv.model.Venda;
 

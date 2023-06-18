@@ -1,3 +1,11 @@
+# Ignore application.properties
+
+src\main\java\net\originmobi\pdv\service\VendaService.java
+
+# Ignore target
+
+target\
+
 # Compiled class file
 *.class
 

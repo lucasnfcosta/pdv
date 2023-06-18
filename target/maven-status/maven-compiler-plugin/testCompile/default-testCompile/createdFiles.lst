@@ -1,2 +1,3 @@
 net\originmobi\pdv\PdvApplicationTests.class
+net\originmobi\pdv\security\TestSecurityConfig.class
 net\originmobi\pdv\service\VendaServiceTest.class

@@ -3,6 +3,8 @@ package net.originmobi.pdv.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,9 +15,12 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import net.originmobi.pdv.enumerado.VendaSituacao;
 import net.originmobi.pdv.model.Pessoa;
+import net.originmobi.pdv.model.Produto;
 import net.originmobi.pdv.model.Usuario;
 import net.originmobi.pdv.model.Venda;
+import net.originmobi.pdv.model.VendaProduto;
 import net.originmobi.pdv.singleton.Aplicacao;
 
 @SpringBootTest
@@ -33,19 +38,30 @@ public class VendaServiceTest {
     }
 
     @Test
-    public void deveRetornarCodigoNaoNulo() {
+    public void abreVendaDeveRetornarCodigoNaoNulo() {
         assertNotNull(vendaService.abreVenda(vendaNova()));
         assertNotNull(vendaService.abreVenda(vendaExistente()));
     }
 
     @Test
-    public void deveRetornarCodigoDiferente_seVendaNova() {
+    public void abreVendaDeveRetornarCodigoDiferente_seVendaNova() {
         assertNotEquals(vendaNova().getCodigo(), vendaService.abreVenda(vendaNova()));
     }
 
     @Test
-    public void deveRetornarMesmoCodigo_seVendaExiste() {
+    public void abreVendaDeveRetornarMesmoCodigo_seVendaExiste() {
         assertEquals(vendaExistente().getCodigo(), vendaService.abreVenda(vendaExistente()));
+    }
+
+    @Test
+    public void removeProdutoDeveRetornarOk_seVendaAberta() {
+        vendaService.abreVenda(vendaAberta());
+
+        String actualReturn = vendaService.removeProduto(vendaProdutoAberta().getCodigo() ,vendaAberta().getCodigo());
+
+        boolean isEqual = actualReturn.equals("ok");
+
+        assertTrue(isEqual);
     }
 
     private Venda vendaNova() {
@@ -63,5 +79,21 @@ public class VendaServiceTest {
         venda.setCodigo(Long.valueOf(94));
 
         return venda;
+    }
+
+    private Venda vendaAberta() {
+        Pessoa pessoa = new Pessoa("Leoncio", "Leo", "11823667898", null, null, 
+        null, null, null);
+        Usuario usuario = new Usuario(null, Aplicacao.getInstancia().getUsuarioAtual(), null, null, pessoa, null, null);
+        
+        Venda venda = new Venda(null, null, null, null, null, 
+        VendaSituacao.ABERTA, null, null, null, pessoa, usuario);
+        venda.setCodigo(Long.valueOf(95));
+
+        return venda;
+    }
+
+    private VendaProduto vendaProdutoAberta() {
+        return new VendaProduto(Long.valueOf(1), Long.valueOf(95), 99.99);
     }
 }

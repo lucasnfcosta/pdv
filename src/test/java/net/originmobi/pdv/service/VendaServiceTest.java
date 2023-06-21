@@ -44,7 +44,7 @@ public class VendaServiceTest {
     }
 
     @Test
-    public void deveRetornarCodigo_seVendaExiste() {
+    public void deveRetornarMesmoCodigo_seVendaExiste() {
         assertEquals(vendaExistente().getCodigo(), vendaService.abreVenda(vendaExistente()));
     }
 

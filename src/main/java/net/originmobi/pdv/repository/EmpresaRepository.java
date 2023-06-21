@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.originmobi.pdv.model.Empresa;
@@ -16,6 +17,8 @@ public interface EmpresaRepository extends JpaRepository<Empresa, Long> {
 	@Query(value = "select * from empresa", nativeQuery = true)
 	Optional<Empresa> buscaEmpresaCadastrada();
 
+	public List<Empresa> findAll();
+	
 	@Transactional
 	@Modifying
 	@Query(value = "update empresa set nome = :nome, nome_fantasia = :nome_fantasia, cnpj = :cnpj, ie = :ie, regime_tributario_codigo = :regime "

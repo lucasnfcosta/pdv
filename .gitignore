@@ -1,3 +1,11 @@
+# Ignore application.properties
+
+src\main\resources\application.properties
+
+# Ignore target
+
+target
+
 # Compiled class file
 *.class
 

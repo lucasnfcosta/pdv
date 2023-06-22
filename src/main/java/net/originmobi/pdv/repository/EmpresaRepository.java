@@ -16,8 +16,6 @@ public interface EmpresaRepository extends JpaRepository<Empresa, Long> {
 
 	@Query(value = "select * from empresa", nativeQuery = true)
 	Optional<Empresa> buscaEmpresaCadastrada();
-
-	public List<Empresa> findAll();
 	
 	@Transactional
 	@Modifying

@@ -1,8 +1,8 @@
 package net.originmobi.pdv;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -159,7 +159,7 @@ public class NotaFiscalServiceTest {
 	@Test
 	public void testGeraDV() {
 		NotaFiscalService nf = new NotaFiscalService();
-		assertEquals(1, nf.geraDV("DV14"));
+		assertEquals(Integer.valueOf(1), nf.geraDV("DV14"));
 		System.out.println("DV gerado");
 	}
 	

@@ -1,30 +1,27 @@
-package net.originmobi.pdv;
+package net.originmobi.pdv.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import java.io.File;
 
+import java.io.IOException;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Date;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Optional;
 
-import org.jfree.util.Log;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ImportResource;
-import org.springframework.stereotype.Component;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import net.originmobi.pdv.service.notafiscal.NotaFiscalService;
@@ -38,7 +35,6 @@ import net.originmobi.pdv.model.Estado;
 import net.originmobi.pdv.model.EmpresaParametro;
 import net.originmobi.pdv.model.RegimeTributario;
 import net.originmobi.pdv.model.Telefone;
-import net.originmobi.pdv.repository.EmpresaRepository;
 import net.originmobi.pdv.model.Pessoa;
 import net.originmobi.pdv.model.FreteTipo;
 import net.originmobi.pdv.model.NotaFiscalFinalidade;
@@ -47,7 +43,6 @@ import net.originmobi.pdv.model.NotaFiscalItemImposto;
 import net.originmobi.pdv.model.NotaFiscalTotais;
 import net.originmobi.pdv.model.Pais;
 import net.originmobi.pdv.model.NotaFiscal;
-import net.originmobi.pdv.xml.nfe.GeraXmlNfe;
 
 
 @SpringBootTest(classes = NotaFiscalServiceTest.class)
@@ -139,22 +134,13 @@ public class NotaFiscalServiceTest {
 	@Test
 	public void testEmpresaExiste() {
 		EmpresaService es1 = new EmpresaService();
-		Empresa e1 = new Empresa("Empresa1", "E1", "123-321-23-223-1", "12", new RegimeTributario(), new Endereco(), new EmpresaParametro());
 		try{
-			es1.cadastro(e1);	
+			es1.cadastro(empresa);	
 		}catch(Exception e) {
-			System.out.println("Não ha empresas para cadastrar!");
-			//fail("Não ha empresas para cadastrar!\n");
+			System.out.println("O método 'save()' ao tentar cadastrar não funciona, por conta da classe 'EmpresaRepository'");
 		}
 		assertThrows(NullPointerException.class, ()->es1.verificaEmpresaCadastrada());		
 	}
-	
-	/*public void testCadastro() {
-		EmpresaService es = new EmpresaService();
-		es.cadastro(empresa);
-		
-		NFService.cadastrar(2l, "natureza", NotaFiscalTipo.valueOf("ENTRADA"));
-	}*/
 	
 	@Test
 	public void testGeraDV() {
@@ -164,13 +150,25 @@ public class NotaFiscalServiceTest {
 	}
 	
 	@Test
-	public void testCleanUp() {
-		assertThrows(NullPointerException.class, ()->NFService.cleanUp(null));
-		System.out.println("O arquivo nao pode ser deletado pois nao existe");
+	public void testCleanUp () throws IOException{	
+		String path = "C:/Users/Pichau/Desktop/Rodrigo/Test.txt";
+		
+		try{
+			File file = new File(path);
+			file.createNewFile();
+        }catch(IOException io){
+            io.printStackTrace();
+        }
+		
+		Path p = Paths.get(path);
+		NFService.cleanUp(p);
+		
+		assertThrows(NoSuchFileException.class, ()->NFService.cleanUp(p));
+		System.out.println("Arquivo criado e ja excluido!");
 	}
 
 	@Test
-	public void testNF() {
+	public void testEmite() {
 		assertNotNull(this.notaFiscal);
 		
 		NotaFiscalItemImposto nfii = new NotaFiscalItemImposto(1, 2, 3, 4.5, 6.8, 12.7, 6, 8.1, 7.1, 8.2, 14.2, 1.1,
@@ -184,5 +182,27 @@ public class NotaFiscalServiceTest {
 		
 		assertThrows(NullPointerException.class, ()->NFService.emitir(notaFiscal));
 		System.out.println("NotaFiscalRepository notasFiscais está vazio!");
+	}
+
+	@Test
+	public void testSalvaXml() {		
+		assertNotNull(notaFiscal.getChave_acesso());
+		
+		String path = "C:\\Users\\Pichau\\Desktop\\pdv";
+		String caminho = path+NotaFiscalService.CAMINHO_XML;
+		NFService.salvaXML("Gravado com sucesso! em "+caminho, notaFiscal.getChave_acesso());
+		
+		assertEquals(NFService.diretorio, caminho);
+	}
+
+	@Test
+	public void testRemoveXml() {
+		File file = new File("C:\\Users\\Pichau\\Desktop\\pdv"+NotaFiscalService.CAMINHO_XML+File.separator+notaFiscal.getChave_acesso()+".xml");
+		try {
+			assertFalse(!file.exists());
+		}catch(Exception e) {
+			fail(e.getMessage());
+		}
+		assertTrue(NFService.removeXml(notaFiscal.getChave_acesso()));
 	}
 }

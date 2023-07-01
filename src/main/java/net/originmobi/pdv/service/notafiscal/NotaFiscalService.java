@@ -33,7 +33,7 @@ import net.originmobi.pdv.xml.nfe.GeraXmlNfe;
 
 @Service
 public class NotaFiscalService {
-	
+		
 	@Autowired
 	private NotaFiscalRepository notasFiscais;
 
@@ -46,8 +46,10 @@ public class NotaFiscalService {
 	@Autowired
 	private PessoaService pessoas;
 
-	private static final String CAMINHO_XML = "/src/main/resources/xmlNfe/";
+	public static final String CAMINHO_XML = "\\src\\main\\resources\\xmlNfe";
 
+	public String diretorio;
+	
 	public List<NotaFiscal> lista() {
 		return notasFiscais.findAll();
 	}
@@ -139,6 +141,7 @@ public class NotaFiscalService {
 		}
 
 		DIRETORIO = Paths.get(contexto + CAMINHO_XML);
+		diretorio = DIRETORIO.toString();
 
 		try {
 			PrintWriter out = new PrintWriter(new FileWriter(DIRETORIO.toString() + "/" + chaveNfe + ".xml"));
@@ -158,7 +161,7 @@ public class NotaFiscalService {
 		  Files.delete(path);
 	}
 	
-	public void removeXml(String chave_acesso) {
+	public boolean removeXml(String chave_acesso) {
 		String contexto = "";
 
 		try {
@@ -175,7 +178,9 @@ public class NotaFiscalService {
 			}
 		} catch (Exception e) {
 			Log.debug("Erro ao deletar XML " + e);
+			return false;
 		}
+		return true;
 	}
 
 	public Optional<NotaFiscal> busca(Long codnota) {

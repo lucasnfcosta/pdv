@@ -1,13 +1,16 @@
 package net.originmobi.pdv.sistema;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -30,6 +33,11 @@ public class BancoTest {
     public void createDriver() {
         driver = new ChromeDriver();
         driver.get("http://localhost:8080/login");
+    }
+
+    @After
+    public void fechaBrowser() {
+        driver.close();
     }
 
     @Test
@@ -88,6 +96,35 @@ public class BancoTest {
 
         Alert alerta = wait.until(ExpectedConditions.alertIsPresent());
         String mensagemAlerta = alerta.getText();
+        alerta.dismiss();
+
+        assertEquals(mensagemAlerta, "Lançamento realizado com sucesso");
+    }
+
+    @Test
+    public void testeRetirada() {
+        preencheLogin(driver);
+        selecionaBanco(driver);
+
+        WebElement gerenciar = driver.findElement(By.xpath("/html/body/section[2]/div/div/div/table/tbody/tr/td[7]/a"));
+        gerenciar.click();
+
+        WebElement retirar = driver.findElement(By.xpath("/html/body/section[1]/div/div/div[3]/div[2]/button"));
+        retirar.click();
+
+        WebDriverWait wait = new WebDriverWait(driver, Long.valueOf(10).longValue());
+        WebElement valor = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/section[1]/div/div/div[5]/div/div/div/div/form/div[1]/div/input")));
+        valor.sendKeys("10000");
+
+        WebElement obs = driver.findElement(By.xpath("/html/body/section[1]/div/div/div[5]/div/div/div/div/form/div[2]/div/input"));
+        obs.sendKeys("retirada");
+
+        WebElement confirmar = driver.findElement(By.xpath("/html/body/section[1]/div/div/div[5]/div/div/div/div/form/div[3]/a"));
+        confirmar.click();
+
+        Alert alerta = wait.until(ExpectedConditions.alertIsPresent());
+        String mensagemAlerta = alerta.getText();
+        alerta.dismiss();
 
         assertEquals(mensagemAlerta, "Lançamento realizado com sucesso");
     }
@@ -105,6 +142,16 @@ public class BancoTest {
     private void selecionaBanco(ChromeDriver driver) {
         WebElement banco = driver.findElement(By.xpath("/html/body/div[3]/div/div[4]/a"));
         banco.click();
+    }
+
+    private boolean isAlertPresent() { 
+        try { 
+            driver.switchTo().alert(); 
+            return true;
+        }
+        catch (NoAlertPresentException Ex) { 
+            return false; 
+        }   
     }
     
 }

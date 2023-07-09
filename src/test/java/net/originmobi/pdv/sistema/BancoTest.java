@@ -1,5 +1,7 @@
 package net.originmobi.pdv.sistema;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -7,6 +9,8 @@ import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -25,13 +29,38 @@ public class BancoTest {
     public void createDriver() {
         driver = new ChromeDriver();
         driver.get("http://localhost:8080/login");
-        preencheLogin(driver);
-        selecionaBanco(driver);
     }
 
     @Test
-    public void testaSuprimento() {
+    public void testaCriarNovoBanco() {
+        preencheLogin(driver);
+        selecionaBanco(driver);
+        
+        WebElement abrirNovo = driver.findElement(By.xpath("/html/body/section[2]/div/div/div/div[2]/a"));
+        abrirNovo.click();
 
+        WebElement observacao = driver.findElement(By.xpath("/html/body/section[1]/div/div/form/div[3]/div/input"));
+        observacao.sendKeys("observação");
+
+        WebElement selectBanco = driver.findElement(By.xpath("/html/body/section[1]/div/div/form/div[4]/div/select/option[3]"));
+        selectBanco.click();
+
+        WebElement agencia = driver.findElement(By.xpath("/html/body/section[1]/div/div/form/div[5]/div/input[1]"));
+        agencia.sendKeys("11111");
+
+        WebElement conta = driver.findElement(By.xpath("/html/body/section[1]/div/div/form/div[5]/div/input[2]"));
+        conta.sendKeys("111111");
+
+        WebElement valorAbertura = driver.findElement(By.xpath("/html/body/section[1]/div/div/form/div[6]/div/input"));
+        valorAbertura.sendKeys("10000");
+
+        WebElement abrirBotao = driver.findElement(By.xpath("/html/body/section[1]/div/div/form/a"));
+        abrirBotao.click();
+
+        WebDriverWait wait = new WebDriverWait(driver, Long.valueOf(10).longValue());
+        WebElement title = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/section[1]/div/div/div[1]/div[1]/h2")));
+
+        assertEquals(title.getText(), "Gerenciar Banco");
     }
 
     private void preencheLogin(ChromeDriver driver) {

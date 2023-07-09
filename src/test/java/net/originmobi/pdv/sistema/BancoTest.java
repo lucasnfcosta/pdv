@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -61,6 +62,34 @@ public class BancoTest {
         WebElement title = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/section[1]/div/div/div[1]/div[1]/h2")));
 
         assertEquals(title.getText(), "Gerenciar Banco");
+    }
+
+    @Test
+    public void testeSuprimento() {
+        preencheLogin(driver);
+        selecionaBanco(driver);
+
+        WebElement gerenciar = driver.findElement(By.xpath("/html/body/section[2]/div/div/div/table/tbody/tr/td[7]/a"));
+        gerenciar.click();
+
+        WebElement suprimento = driver.findElement(By.xpath("/html/body/section[1]/div/div/div[3]/div[1]/button"));
+        suprimento.click();
+
+        WebDriverWait wait = new WebDriverWait(driver, Long.valueOf(10).longValue());
+        WebElement valor = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/section[1]/div/div/div[4]/div/div/div/div/form/div[1]/div/input")));
+
+        valor.sendKeys("10000");
+
+        WebElement obs = driver.findElement(By.xpath("/html/body/section[1]/div/div/div[4]/div/div/div/div/form/div[2]/div/input"));
+        obs.sendKeys("observação");
+
+        WebElement confirmar = driver.findElement(By.xpath("/html/body/section[1]/div/div/div[4]/div/div/div/div/form/div[3]/a"));
+        confirmar.click();
+
+        Alert alerta = wait.until(ExpectedConditions.alertIsPresent());
+        String mensagemAlerta = alerta.getText();
+
+        assertEquals(mensagemAlerta, "Lançamento realizado com sucesso");
     }
 
     private void preencheLogin(ChromeDriver driver) {
